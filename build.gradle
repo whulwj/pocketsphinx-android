@@ -5,25 +5,22 @@ def sphinxbase_dir = properties.getProperty('sphinxbase.dir')
 
 buildscript {
     repositories {
+        maven { url "https://jitpack.io" }
         google()
-        jcenter()
+        mavenCentral()
+        jcenter() // Warning: this repository is going to shut down soon
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.5.3'
+        classpath 'com.android.tools.build:gradle:7.4.2'
     }
-}
-
-allprojects {
-  repositories {
-      google()
-      jcenter()
-  }
 }
 
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 29
+    namespace 'edu.cmu.pocketsphinx'
+    compileSdk 29
+	ndkVersion "25.2.9519653"
     defaultConfig {
         minSdkVersion 14
         targetSdkVersion 29
@@ -41,12 +38,25 @@ android {
     }
     sourceSets {
          main {
-             java.srcDirs = ['src/main/java', 'build/generated-src']
+             java.srcDirs = ['src/main/java', 'build/generated-src', '.apt_generated']
          }
     }
     externalNativeBuild {
         cmake {
              path "CMakeLists.txt"
+        }
+    }
+    // Configure only for each module that uses Java 8
+    // language features (either in its source code or
+    // through dependencies).
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    buildTypes {
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
 }

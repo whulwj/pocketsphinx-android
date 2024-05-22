@@ -38,30 +38,30 @@ public interface RecognitionListener {
     /**
      * Called at the start of utterance.
      */
-    public void onBeginningOfSpeech();
+    void onBeginningOfSpeech();
 
     /**
      * Called at the end of utterance.
      */
-    public void onEndOfSpeech();
+    void onEndOfSpeech();
 
     /**
      * Called when partial recognition result is available.
      */
-    public void onPartialResult(Hypothesis hypothesis);
+    void onPartialResult(Hypothesis hypothesis);
 
     /**
      * Called after the recognition is ended.
      */
-    public void onResult(Hypothesis hypothesis);
+    void onResult(Hypothesis hypothesis);
     
     /**
      * Called when an error occurs.
      */
-    public void onError(Exception exception);
+    void onError(Exception exception);
     
     /**
      * Called after timeout expired
      */
-    public void onTimeout();
+    void onTimeout();
 }

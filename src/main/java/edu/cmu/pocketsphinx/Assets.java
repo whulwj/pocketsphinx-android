@@ -70,7 +70,7 @@ import android.util.Log;
  */
 public class Assets {
 
-    protected static final String TAG = Assets.class.getSimpleName();
+    protected static final String TAG = "Assets";
 
     public static final String ASSET_LIST_NAME = "assets.lst";
     public static final String SYNC_DIR = "sync";
@@ -93,9 +93,10 @@ public class Assets {
      */
     public Assets(Context context) throws IOException {
         File appDir = context.getExternalFilesDir(null);
-        if (null == appDir)
+        if (null == appDir) {
             throw new IOException("cannot get external files dir, "
                     + "external storage state is " + Environment.getExternalStorageState());
+        }
         externalDir = new File(appDir, SYNC_DIR);
         assetManager = context.getAssets();
     }
@@ -105,7 +106,7 @@ public class Assets {
      * 
      * @param context
      *            application context to retrieve the assets
-     * @param path
+     * @param dest
      *            path to sync the files
      */ 
     public Assets(Context context, String dest) {
@@ -168,11 +169,13 @@ public class Assets {
         while (!queue.isEmpty()) {
             path = queue.poll();
             String[] list = assetManager.list(path);
-            for (String nested : list)
+            for (String nested : list) {
                 queue.offer(nested);
+            }
 
-            if (list.length == 0)
+            if (list.length == 0) {
                 items.add(path);
+            }
         }
 
         return items;
@@ -182,8 +185,9 @@ public class Assets {
         List<String> lines = new ArrayList<String>();
         BufferedReader br = new BufferedReader(new InputStreamReader(source));
         String line;
-        while (null != (line = br.readLine()))
+        while (null != (line = br.readLine())) {
             lines.add(line);
+        }
         return lines;
     }
 
@@ -204,15 +208,16 @@ public class Assets {
     public void updateItemList(Map<String, String> items) throws IOException {
         File assetListFile = new File(externalDir, ASSET_LIST_NAME);
         PrintWriter pw = new PrintWriter(new FileOutputStream(assetListFile));
-        for (Map.Entry<String, String> entry : items.entrySet())
+        for (Map.Entry<String, String> entry : items.entrySet()) {
             pw.format("%s %s\n", entry.getKey(), entry.getValue());
+        }
         pw.close();
     }
 
     /**
      * Copies raw asset resource to external storage of the device.
      * 
-     * @param path
+     * @param asset
      *            path of the asset to copy
      * @throws IOException
      *             if an I/O error occurs
@@ -228,8 +233,9 @@ public class Assets {
         while ((nread = source.read(buffer)) != -1) {
             if (nread == 0) {
                 nread = source.read();
-                if (nread < 0)
+                if (nread < 0) {
                     break;
+                }
                 destination.write(nread);
                 continue;
             }
@@ -254,11 +260,12 @@ public class Assets {
 
         for (String path : items.keySet()) {
             if (!items.get(path).equals(externalItems.get(path))
-                    || !(new File(externalDir, path).exists()))
+                    || !(new File(externalDir, path).exists())) {
                 newItems.add(path);
-            else
+            } else {
                 Log.i(TAG,
                         String.format("Skipping asset %s: checksums are equal", path));
+            }
 
         }
 

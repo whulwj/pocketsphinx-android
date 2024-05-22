@@ -129,7 +129,7 @@ public class SpeechRecognizer {
      * Starts recognition. After specified timeout listening stops and the
      * endOfSpeech signals about that. Does nothing if recognition is active.
      * 
-     * @timeout - timeout in milliseconds to listen.
+     * @param timeout - timeout in milliseconds to listen.
      * 
      * @return true if recognition was actually started
      */
@@ -276,7 +276,7 @@ public class SpeechRecognizer {
      * 
      * @param name
      *            search name
-     * @param phrase
+     * @param file
      *            a file with search phrases, one phrase per line with optional weight in the end, for example
      *            <br/>
      *            <code>
@@ -293,7 +293,7 @@ public class SpeechRecognizer {
      *
      * @param name
      *          search name
-     * @param phonetic bigram model
+     * @param file phonetic bigram model
      * 
      */
     public void addAllphoneSearch(String name, File file) {
