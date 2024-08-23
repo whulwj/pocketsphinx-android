@@ -29,6 +29,10 @@
  */
 package edu.cmu.pocketsphinx;
 
+import android.content.Context;
+import android.content.res.AssetManager;
+import android.util.Log;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -47,11 +51,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
-
-import android.content.Context;
-import android.content.res.AssetManager;
-import android.os.Environment;
-import android.util.Log;
 
 /**
  * Provides utility methods to keep asset files to external storage to allow
@@ -80,28 +79,6 @@ public class Assets {
     private final File externalDir;
 
     /**
-     * Creates new instance for asset synchronization
-     * 
-     * @param context
-     *            application context
-     * 
-     * @throws IOException
-     *             if the directory does not exist
-     * 
-     * @see android.content.Context#getExternalFilesDir
-     * @see android.os.Environment#getExternalStorageState
-     */
-    public Assets(Context context) throws IOException {
-        File appDir = context.getExternalFilesDir(null);
-        if (null == appDir) {
-            throw new IOException("cannot get external files dir, "
-                    + "external storage state is " + Environment.getExternalStorageState());
-        }
-        externalDir = new File(appDir, SYNC_DIR);
-        assetManager = context.getAssets();
-    }
-
-    /**
      * Creates new instance with specified destination for assets
      * 
      * @param context
@@ -111,6 +88,19 @@ public class Assets {
      */ 
     public Assets(Context context, String dest) {
         externalDir = new File(dest);
+        assetManager = context.getAssets();
+    }
+
+    /**
+     * Creates new instance with specified destination for assets
+     *
+     * @param context
+     *            application context to retrieve the assets
+     * @param destDirectory
+     *            directory to sync the files
+     */
+    public Assets(Context context, File destDirectory) {
+        externalDir = destDirectory;
         assetManager = context.getAssets();
     }
 
@@ -271,16 +261,20 @@ public class Assets {
 
         unusedItems.addAll(externalItems.keySet());
         unusedItems.removeAll(items.keySet());
+        for (String path : unusedItems) {
+            File file = null;
+            try {
+                file = new File(externalDir, path);
+                file.delete();
+                Log.i(TAG, String.format("Removing asset %s", file));
+            } catch (Throwable t) {
+                Log.w(TAG, String.format("Remove asset %s", file) + ": " + t.getClass().getSimpleName() + ", " + t.getMessage());
+            }
+        }
 
         for (String path : newItems) {
             File file = copy(path);
             Log.i(TAG, String.format("Copying asset %s to %s", path, file));
-        }
-
-        for (String path : unusedItems) {
-            File file = new File(externalDir, path);
-            file.delete();
-            Log.i(TAG, String.format("Removing asset %s", file));
         }
 
         updateItemList(items);
