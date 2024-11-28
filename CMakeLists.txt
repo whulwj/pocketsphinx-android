@@ -106,7 +106,7 @@ foreach(source ${POCKETSPHINX_SOURCES})
 endforeach()
 
 
-add_library( pocketsphinx_jni SHARED
+add_library(pocketsphinx_jni SHARED
         build/generated-src/cpp/pocketsphinx_wrap.c
         build/generated-src/cpp/sphinxbase_wrap.c
         ${SPHINXBASE_SOURCES_ABS} ${POCKETSPHINX_SOURCES_ABS}
@@ -117,5 +117,5 @@ include_directories(${SPHINXBASE_DIR}/include ${SPHINXBASE_DIR}/include/android 
 add_definitions(-DHAVE_CONFIG_H)
 add_compile_options(-O3)
 
-target_link_libraries( pocketsphinx_jni
-        log )
+target_link_libraries(pocketsphinx_jni
+        log)
